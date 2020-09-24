@@ -23,7 +23,7 @@ def main():
     includes=split(args.include)
     excludes=split(args.exclude)
     tree = GitlabTree(args.url, args.token, args.method, includes,
-                      excludes, args.file, args.concurrency, args.verbose)
+                      excludes, args.file, args.concurrency, args.verbose, args.insecure)
     log.debug("Reading projects tree from gitlab at [%s]", args.url)
     tree.load_tree()
 
@@ -104,7 +104,12 @@ def parse_args(argv=None):
         '-f',
         '--file',
         metavar=('file'),
-        help=SUPPRESS)    
+        help=SUPPRESS)
+    parser.add_argument(
+        '-k',
+        '--insecure',
+        action='store_true',
+        help='Allow insecure server connections when using SSL')  
     parser.add_argument(
         '-c',
         '--concurrency',

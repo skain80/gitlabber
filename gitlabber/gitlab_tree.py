@@ -16,17 +16,24 @@ log = logging.getLogger(__name__)
 
 class GitlabTree:
 
-    def __init__(self, url, token, method, includes=[], excludes=[], in_file=None, concurrency=1, disable_progress=False):
+    def __init__(self, url, token, method, includes=[], excludes=[], in_file=None, concurrency=1, disable_progress=False, insecure=False):
         self.includes = includes
         self.excludes = excludes
         self.url = url
         self.root = Node("", root_path="", url=url)
-        self.gitlab = Gitlab(url, private_token=token)
+        self.insecure = insecure
+        if insecure:
+            import urllib3
+            urllib3.disable_warnings()
+            self.gitlab = Gitlab(url, private_token=token, ssl_verify=False)
+        else:
+            self.gitlab = Gitlab(url, private_token=token)
         self.method = method
         self.in_file = in_file
         self.concurrency = concurrency
         self.disable_progress = disable_progress
         self.progress = ProgressBar('* loading tree', disable_progress)
+        
 
     def is_included(self, node):
         '''
